@@ -5,6 +5,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.widget.ImageView;
 
 import com.bumptech.glide.Glide;
+import com.bumptech.glide.manager.RequestManagerRetriever;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -16,6 +17,9 @@ public class MainActivity extends AppCompatActivity {
         Glide.with(this)
                 .load("https://p.upyun.com/docs/cloud/demo.jpg")
                 .into(imageView);
+
+        RequestManagerRetriever r;
+        r.get
         /**
          RequestBuilder
          RequestBuilder 是Glide中请求的骨架，负责携带请求的url和你的设置项来开始一个新的加载过程。
