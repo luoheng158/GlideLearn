@@ -16,7 +16,7 @@
 ![image](../img/icon_glide_with.png)
 
 Glide#with方法有六个重载的形式，但是第一部分都是调用Glide#getRetriever获取一个RequestManagerRetriever对象，进而调用RequestManagerRetriever#get方法最终创建一个RequestManager对象。下面一个个来进行分析。
-###1.Glide#with
+### 1.Glide#with
 
 ```
   @NonNull
@@ -25,7 +25,7 @@ Glide#with方法有六个重载的形式，但是第一部分都是调用Glide#g
   }
 ```
 还有其他的重载形式，其实第一部分都是一样，都是获取他们(Actvity/View/Fragment等)的上下文，然后通过getRetriever方法去获取一个RequestManagerRetriever对象。进而得到一个RequestManager。
-###2.Glide#getRetriever 
+### 2.Glide#getRetriever 
 
 ```
   @NonNull
@@ -42,7 +42,7 @@ Glide#with方法有六个重载的形式，但是第一部分都是调用Glide#g
 ```
 这个方法先是进行了context的非空检查，然后调用Glide#get方法
 
-###3.Glide#get
+### 3.Glide#get
 ```
   @NonNull
   public static Glide get(@NonNull Context context) {
@@ -59,7 +59,7 @@ Glide#with方法有六个重载的形式，但是第一部分都是调用Glide#g
 ```
 这个方法的主要逻辑是构建一个Glide的单例对象，初始化Glide对象时，做了很多复杂的配置信息，包括缓存策略等等，这里我们暂时跳过，后续讲到这些配置信息再详细分析，有时候，看代码要忽略其他的细节，沿着一条主线走，站在宏观的视角，针对具体问题再行微观分析，往往会比较清晰。这里获取到一个Glide实例之后，回到第2步，接下来回到Glide#getRetriever，然后是调用了Glide#getRequestManagerRetriever继续请求。
 
-###4.Glide#getRequestManagerRetriever
+### 4.Glide#getRequestManagerRetriever
 ```
   @NonNull
   public RequestManagerRetriever getRequestManagerRetriever() {
@@ -68,7 +68,7 @@ Glide#with方法有六个重载的形式，但是第一部分都是调用Glide#g
 ```
 这个方法很简单，就是返回一个RequestManagerRetriever对象，那么它是在什么时候初始化的呢，通过代码分析，在Glide初始化时候，会初始化这个requestManagerRetriever对象，我们暂且略过它。有了这个requestManagerRetriever对象后，回到第1步，接下来会调用RequestManagerRetriever#get方法，与Glide#with对应，它也有6个重载的形式，均是返回一个RequestManager。
 
-###5.RequestManagerRetriever#get
+### 5.RequestManagerRetriever#get
 ![image](../img/icon_request_manager_retriever_get.png)
 
 虽然是有这么多重载形式，但都是一个平行的关系，为了理解原理，去繁为简，其实我们完全可以只分析某一个，这里我们以参数为FragmentActivity为例，毕竟项目中其实大多数都是使用FragmentActivity了。
@@ -88,7 +88,7 @@ Glide#with方法有六个重载的形式，但是第一部分都是调用Glide#g
 ```
 这里有两个分支，一个是ui线程，一个是非ui线程，这里我们先考虑在ui线程中的情况，把一条线走通，后续再来分析一些分支的情况。可以看到，在ui线程中，首先是获取了support下面的FragmentManager对象，然后继续调用supportFragmentGet。
 
-###6.RequestManagerRetriever#supportFragmentGet
+### 6.RequestManagerRetriever#supportFragmentGet
 ```
  @NonNull
   private RequestManager supportFragmentGet(
@@ -111,7 +111,7 @@ Glide#with方法有六个重载的形式，但是第一部分都是调用Glide#g
   }
 ```
 这个方法有4个参数，以我们现在为例，parentHint为null，isParentVisible为true。还是一个道理，我们可以假定某一种情况，便于代码的主线分析。接下来是构建了一个SupportRequestManagerFragment对象，它就是一个Fragment对象，其实没有什么神秘，它里面绑定了一些Lifecycle的方法，后续我们会看到。这里其实用了一个技巧，因为我们看到，要跟踪一个Activity的生命周期，同时又要能够达到通用性，显然在用户的业务Activity中是不太可能能插入生命周期的钩子方法，那么，作为一个框架层面的，显然要必备一些通用性才行，这里Glide是通过手动添加一个隐藏的SupportRequestManagerFragment对象，通过监听它的生命周期变化而达到监听到宿主Activity生命周期的目的，显然，这里是完全可行的方案。我们先继续分析getSupportRequestManagerFragment这个方法的实现。
-###7. RequestManagerRetriever#getSupportRequestManagerFragment
+### 7.RequestManagerRetriever#getSupportRequestManagerFragment
 ```
   @NonNull
   private SupportRequestManagerFragment getSupportRequestManagerFragment(
@@ -135,7 +135,7 @@ Glide#with方法有六个重载的形式，但是第一部分都是调用Glide#g
   }
 ```
 这里没有什么比较难的，唯独就是有一个小技巧，为什么需要这个pendingSupportRequestManagerFragments对象，它其实是为了避免重复创建SupportRequestManagerFragment对象，这里有两个if检查，初学者可能会有点奇怪，这是因为FragmentManager提交这个方法是一个消息机制触发的形式，并不会立即的执行，如果此时多次调用而没有pendingSupportRequestManagerFragments的保证，是会多次建立对象的。显然添加到fm中后，就不再需要pendingSupportRequestManagerFragments，所以在下一个消息到达时候，ID_REMOVE_SUPPORT_FRAGMENT_MANAGER中及时的被移除。然后这里我们看到isParentVisible这个变量，其实是触发Lifecycle的一些回调。有了这个Fragment之后，我们继续回到第6步的逻辑。这里就开始了RequestManager的构造，然后再设置到SupportRequestManagerFragment的成员变量requestManager中。下面我们继续分析这个RequestManager的构造过程。这里factory的实现类是一个GeneratedRequestManagerFactory。
-###8.GeneratedRequestManagerFactory#build
+### 8.GeneratedRequestManagerFactory#build
 ```
   @Override
   @NonNull
@@ -145,7 +145,7 @@ Glide#with方法有六个重载的形式，但是第一部分都是调用Glide#g
   }
 ```
 这个工厂方法，最终会构建一个GlideRequests对象，至此创建RequestManager的任务就已经完成，Glide#with方法执行完成，这里我们可以看到，RequestManager对于同一个上下文来说是唯一的。下面我们继续分析GlideRequests的load方法。
-###9.GlideRequests#load
+### 9.GlideRequests#load
 ```
   @Override
   @NonNull
@@ -155,7 +155,7 @@ Glide#with方法有六个重载的形式，但是第一部分都是调用Glide#g
   }
 ```
 这个很简单，直接是调用父类的load方法。
-###10.RequestManager#load
+### 10.RequestManager#load
 ```
   @NonNull
   @CheckResult
@@ -166,7 +166,7 @@ Glide#with方法有六个重载的形式，但是第一部分都是调用Glide#g
 
 ```
 首先分析这个方法，发现返回类型是一个RequestBuilder，显然Glide对于请求的各种链式结构用到了Builder的设计模式，以后我们会经常看到各种链式的多参数的加载方式。下面我们继续分析asDrawable的实现。
-###11.RequestManager#asDrawable
+### 11.RequestManager#asDrawable
 ```
   @NonNull
   @CheckResult
@@ -182,7 +182,7 @@ Glide#with方法有六个重载的形式，但是第一部分都是调用Glide#g
   }
 ```
 在asDrawable方法中，继续调用了as方法，传入了一个Drawable.class参数，接着就是调用RequestBuilder的构造方法，将参数传入。RequestBuilder中涉及到大量的图片加载参数的设置。接下来进入到步骤10，通过RequestBuilder#load传入第一个参数。
-###12.RequestBuilder#load
+### 12.RequestBuilder#load
 ```
   @NonNull
   @Override
@@ -199,7 +199,7 @@ Glide#with方法有六个重载的形式，但是第一部分都是调用Glide#g
   }
 ```
 这个方法也很简单，只是设置了model这个属性的值，至此，load(url)方法全部结束。接下来分析最后一个重要的方法into。
-###13.RequestBuilder#into
+### 13.RequestBuilder#into
 ```
  @NonNull
   public ViewTarget<ImageView, TranscodeType> into(@NonNull ImageView view) {
@@ -307,7 +307,7 @@ Glide#with方法有六个重载的形式，但是第一部分都是调用Glide#g
   }
 ```
 前面的检查逻辑跳过，这里我们的targetListener是null，target是一个DrawableImageViewTarget对象，然后是通过buildRequest方法，创建了一个Request对象。看名字可以知道，这个才是真正的请求，只有到into此时，才会真正的去请求，我们先分析这个的实现。
-###14.RequestBuilder#buildRequest
+### 14.RequestBuilder#buildRequest
 ```
   private Request buildRequest(
       Target<TranscodeType> target,
@@ -483,7 +483,7 @@ private Request buildRequestRecursive(
   }
 ```
 可以看到，先是从对象池里面去取，有则共享，减少new对象的成本。然后调用init方法，进行一些参数设置。最后我们看到，一个request对象的创建也就结束了。继续回到主线，返回到步骤13，回到into方法，继续往下执行。
-###15.RequestBuilder.into
+### 15.RequestBuilder.into
 ```
  private <Y extends Target<TranscodeType>> Y into(
       @NonNull Y target,
@@ -567,7 +567,7 @@ private Request buildRequestRecursive(
   }
 ```
 其实就是将Request和View做了一个绑定的关系，保存在View的tag之中。这步设置完成之后，就进入到了最后一步。track当前请求。
-###16.RequestManager#track
+### 16.RequestManager#track
 
 ```
  void track(@NonNull Target<?> target, @NonNull Request request) {
@@ -614,7 +614,7 @@ LifecycleListener接口，RequestTracker虽然没有直接实现LifecycleListene
   }
 ```
 可以看到，真正和宿主Acytivity绑定的正是这个RequestManager对象，所有生命周期变动也都是先通过RequestManager来进行分发。我们可以简单看RequestManager中，onStart/onStop/onDestroy均是做了一些下发生命周期的变化，通知到相关的类，比如到RequestTracker和TargetTracker，由RequestTracker再操作各个Request，而由TargetTracker再去管理各个Target。这样各个部分就可以根据LifiCircle进行相关的操作，如RequestTracker中进行取消和启动Request等。至此，大致就明白了LifecycleListener和LifeCircle的作用，其实也没有什么神秘。无非就是找到注册的地方，和接收的对象。接下来，我们分析最后runRequest的实现。
-###17.RequestTracker#runRequest
+### 17.RequestTracker#runRequest
 
 ```
   public void runRequest(@NonNull Request request) {
@@ -685,7 +685,7 @@ LifecycleListener接口，RequestTracker虽然没有直接实现LifecycleListene
 
 ```
 这个方法中，先是对model进行判断，这个model此时就是我们传的那个url，如果为空，则直接load失败，然后是一些状态的检查和一些回调方法等，接下来判断size，如果是有效的，则触发去真正的请求，否则则是设置一个回调，等待view布局有size之后，再来触发请求，真正的请求其实就在onSizeReady中被得到执行。
-###18.ImageViewTarget#onSizeReady
+### 18.ImageViewTarget#onSizeReady
 ```
 @Override
   public void onSizeReady(int width, int height) {
@@ -761,7 +761,7 @@ public interface ResourceCallback {
 }
 ```
 实现是在SignleRequest中，具体代码大家可自行分析，显然，必须要做的一件事情是告诉Target此时的加载结果，再由Target去通知View做如何的展示，实际上，也是这样子实现的。具体细节这里不展开了。最后回到第17步，还有一个比较简单的方法Target#onLoadStarted。
-###19.Target#onLoadStarted
+### 19.Target#onLoadStarted
 
 ```
   @Override
