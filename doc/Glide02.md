@@ -28,6 +28,7 @@ Glide将资源加载到一个接口中，这个接口定义了加载的生命周
 ### 9.ModelTypes
 定义了load方法的所有的重载形式，以及支持自定义的返回格式。
 
+### 总结
 通过这张类图，其实比较简单的执行过程就是：  
 
 1. Glide#with获取一个全局的单例对象RequestManagerRetriever，由它负责去获取一个和Context相关的并且对Context唯一的RequestManager对象，并且已经和宿主Activity生命周期绑定。  
