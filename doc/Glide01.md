@@ -685,7 +685,7 @@ LifecycleListener接口，RequestTracker虽然没有直接实现LifecycleListene
 
 ```
 这个方法中，先是对model进行判断，这个model此时就是我们传的那个url，如果为空，则直接load失败，然后是一些状态的检查和一些回调方法等，接下来判断size，如果是有效的，则触发去真正的请求，否则则是设置一个回调，等待view布局有size之后，再来触发请求，真正的请求其实就在onSizeReady中被得到执行。
-### 18.ImageViewTarget#onSizeReady
+### 18.SingleRequest#onSizeReady
 ```
 @Override
   public void onSizeReady(int width, int height) {
