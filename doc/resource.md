@@ -24,6 +24,7 @@ UML图如下：
 一个包装了BitmapDrawable相关的延迟分配的资源。没明白？？？？
 
 - LockedResource  
-一个可以推迟被回收的资源，直到unlock方法被调用
+一个可以推迟被回收的资源，直到unlock方法被调用。
 
-
+- EngineResource  
+一个允许引用统计的包装接口的资源。
