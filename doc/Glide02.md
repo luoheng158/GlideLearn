@@ -1,4 +1,4 @@
-## Glide源码分析（二），基本类图介绍
+## Glide源码分析（二），基本加载类图介绍
 
 经过前文[Glide源码分析（一），基本加载代码流程](Glide01.md)的分析之后，想必大家还是有点云里雾里，这里我画出了Glide基本加载流程中涉及到的类以及它们之间的关系，帮助大家更好的理解这个过程。  
 
@@ -35,3 +35,5 @@ Glide将资源加载到一个接口中，这个接口定义了加载的生命周
 2. RequestManager#load构建一个RequestBuilder对象，供用户设置大量参数，并返回一个RequestBuilder对象。
 3. RequestBuilder#into构建一个Target和一个Request对象，并完成它们的双向绑定关系。在交由RequestManager之前检查是否需要发起请求，如果需要则进入下一步，否则直接结束。
 4. RequestManager#track触发请求request的执行，从而简单的图片加载至此结束，后续request加载状态会反应至target上面，进而和target相关的控件会得到更新，自此一个图片就正确的呈现在ui界面上。
+
+[下一篇 Glide源码分析（三），Engine加载资源过程](Glide03.md)
