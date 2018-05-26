@@ -1,0 +1,6 @@
+## DecodeJob结构
+
+- DecodeHelper
+- DiskCacheProvider  
+是一个LazyDiskCacheProvider对象，成员变量factory具体实现类默认是InternalCacheDiskCacheFactory
+，当然还可以通过GlideBuilder#setDiskCache设置。InternalCacheDiskCacheFactory继承自DiskLruCacheFactory，它主要是指定了磁盘缓存的文件路径和大小，在父类DiskLruCacheFactory的build方法中，根据路径和大小创建了一个DiskCache对象，其具体实现类是DiskLruCacheWrapper。也就是最终DiskCacheProvider需要构建的对象。

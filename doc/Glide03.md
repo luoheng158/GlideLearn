@@ -10,19 +10,19 @@
 ### 关键类
 
 - Key
-唯一标识一些数据的接口。详细介绍[Key结构](key.md)
+唯一标识一些数据的接口。详细介绍->[Key结构](key.md)
 
 - EngineKey
 实现了Key接口，用做多路复用负载的内存缓存键
 
 - Resource  
-一个包装了特定类型的资源接口，并且能够汇集和重用。详细介绍[Resource结构](resource.md)
+一个包装了特定类型的资源接口，并且能够汇集和重用。详细介绍->[Resource结构](resource.md)
 
 - MemoryCache  
-内存缓存接口，用于在内存缓存中添加和移除资源，这里的实现类是LruResourceCache，继承了LruCache。存放的是Key和Resource键值对。
+内存缓存接口，用于在内存缓存中添加和移除资源，这里的实现类是LruResourceCache，继承了LruCache。存放的是Key和Resource键值对。详细介绍->[MemoryCache结构](memory_cache.md)
 
 - DiskCache  
-这里的DiskCache是由InternalCacheDiskCacheFactory创建，其继承自DiskLruCacheFactory，最终DiskCache的实现类是DiskLruCacheWrapper对象。
+这里的DiskCache是由InternalCacheDiskCacheFactory创建，其继承自DiskLruCacheFactory，最终DiskCache的实现类是DiskLruCacheWrapper对象。详细介绍->[DiskCache结构](disk_cache.md)
 
 - ActiveResources  
 存放了已经加载到Target上面，并且还未于JVM GC回收的Resource资源。
