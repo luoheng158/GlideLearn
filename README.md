@@ -9,3 +9,5 @@ gilde源码分析，所有分析均是基于glide tag 4.7.1的代码。
 [Glide源码分析（二），基本加载类图介绍](doc/Glide02.md)  
 
 [Glide源码分析（三），Engine加载资源过程](doc/Glide03.md)
+
+[Glide源码分析（四），DecodeJob执行过程](doc/Glide04.md)

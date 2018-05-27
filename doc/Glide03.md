@@ -402,3 +402,5 @@ public <R> LoadStatus load(...{
 3. 若从激活状态的Resource资源查找失败，则进一步去MemoryCache中去查找，若查找成功，则返回；否则，进入下一阶段。
 4. 若从MemoryCache中查找失败，则再从jobs中去看是否存在一个已经加载完成或正在加载的EngineJob。若找到，则将回调设置到EngineJob以便接收加载成功或失败的通知；否则，进入下一阶段。
 5. 若没有查找到EngineJob，则创建一个EngineJob以及DecodeJob，同时加入到jobs缓存之中，并最终调用EngineJob#start方法，触发加载线程执行真正的加载，从远端获取或者是磁盘获取等。
+
+[下一篇 Glide源码分析（四），DecodeJob执行过程](Glide04.md)
