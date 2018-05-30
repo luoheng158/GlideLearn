@@ -24,4 +24,4 @@ DataFetcherGenerator，因为其实现了DataFetcher.DataCallback接口，在其
 
 总体来说，宏观上代码逻辑还是很清晰的，一次加载过程，会创建一个SingleRequest，调用全局的加载引擎Engine，去创建一对EngineJob与DecodeJob，最后在DecodeJob中，根据DataFetcherGenerator获取到相应的DataFetcher，执行数据的加载。成功之后，一步步回调回去。先是DataFetcher到DataFetcherGenerator,再是DataFetcherGenerator到DecodeJob,再是从DecodeJob到EngineJob,进而在EngineJob中做线程切换，回到主线程，将结果回调至SingeRequest，再由SingleRequest中保存的Target引用通知到对应的控件，完成资源的渲染。同时EngineJob也会告知Engine，此次job已经加载完成，是由EngineJobListener完成的。大致就是一个链式的Callback回调过程。后面我会在代码上，根据这个大纲，详细分析一次从网络加载，并缓存到磁盘的详细过程。
 
-[下一篇 Glide源码分析（五），DecodeJob一次加载详细过程](Glide05.md)
+[下一篇 Glide源码分析（五），EngineJob与DecodeJob代码详细加载过程](Glide05.md)
