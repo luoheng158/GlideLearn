@@ -1,4 +1,4 @@
-## 数据加载结构DataFetcher与ModelLoader
+## 数据加载DataFetcher与ModelLoader结构
 UML如下：
 ![image](../img/diagram_datafetcher_and_modelloader.png)
 

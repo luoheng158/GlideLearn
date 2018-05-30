@@ -3,7 +3,7 @@
 
 1. 封装一些从上面传过来的参数信息，不知道是否还有印象，我们的glide大部分信息是通过前面RequestBuilder中得到的。这里，它内部构造了一个DecodeHelper类，封装了大部分的请求信息。
 
-2. 数据加载模块DataFetcher与ModelLoader，以及加载数据的回调接口。详细参考[数据加载结构DataFetcher与ModelLoader](datafetcher_and_modelloader.md)。DataFetcher中定义了加载数据的接口，其子类很多，比如从网络加载或者是文件加载，均是由其子类具体实现。
+2. 数据加载模块DataFetcher与ModelLoader，以及加载数据的回调接口。详细参考[数据加载DataFetcher与ModelLoader结构](datafetcher_and_modelloader.md)。DataFetcher中定义了加载数据的接口，其子类很多，比如从网络加载或者是文件加载，均是由其子类具体实现。
 
 3. DataFetcherGenerator使用已注册的{@link com.bumptech.glide.load.model.ModelLoader ModelLoaders}和一个模型生成一系列{@link com.bumptech.glide.load.data.DataFetcher DataFetchers}。在DataFetcherGenerator中，通过DecodeHelper类，我们还可以拿到ModelLoader的信息，而通过ModelLoader我们可以得到LoadData的数据结构，从而取得对应的DataFetcher，进而去获取数据。[DataFetcherGenerator结构](data_fetcher_generator.md)。
 
@@ -12,4 +12,16 @@ DecodeJob其他详细信息可以参考[DecodeJob结构](decode_job.md)。
 ![image](../img/sequence_engine.png)
 
 > 1. SingleRequest的onSizeReady方法启动Engine的load方法，同时将ResourceCallback传入。这个ResourceCallback最终会调用相关的Target，完成资源的最终渲染。
-> 2. Engine的load方法
+> 2. Engine的load方法,它里面会根据条件判断，这里我们讨论是本地完全没有缓存的情况，这个时候，load中，会创建EngineJob与DecodeJob，DecodeJob是真正开启线程加载数据的地方，EngineJob负责调度DecodeJob以及和上层模块通信，它们是一个一对一的关系。EngineJob中实现了DecodeJob.Callback用于监听下面数据加载的状态，同时在EngineJon中维护了一系列的从Engine#load方法中传入的ResourceCallback信息，用户在监听到数据加载结果之后，通知上层模块，也就是SingleRequest。随之触发启动DecodeJob，开始任务。
+> 3. DecodeJob的run方法得到执行，在run方法里，它会构造一个DataFetcherGenerator,run方法里面会触发DataFetcherGenerator的startNext方法，同时通过设置到DataFetcherGenerator的FetcherReadyCallback接口，监听数据的获取状态，再将结果上报至EngineJob中（它实现了DecodeJob.Callback接口）。
+> 4. DataFetcherGenerator的startNext,generator会从DecodeHelper中去获取当前的ModelLoader信息，构造出一个LoadData结构类型的数据，得到相应的DataFetcher对象。DataFetcherGenerator子类实现了DataFetcher.DataCallback接口。它是用于监听DataFetcher#loadData结果。
+>5. DataFetcher#loadData完成之后，会将执行结果上报至
+DataFetcherGenerator，因为其实现了DataFetcher.DataCallback接口，在其实现上面，回继续回调其成员变量执行的FetcherReadyCallback中的方法，而此时，FetcherReadyCallback实现类正是DecodeJob，因此，代码继续执行到DecodeJob的回调方法中，我们先至考虑简单的情况，忽略线程之间的切换。
+>6. 回到DecodeJob的FetcherReadyCallback的实现中，它接下来会继续回调设置在其成员变量的类型为DecodeJob.Callback引用，而正是EngineJob实现了这个Callback,因此，代码流程进一步转换给到EngineJob中。
+>7. EngineJob实现了DecodeJob.Callback，此时还没有做线程切换，是处于和DecodeJob#run方法相同的线程，此时，EngineJob中利用Handler机制，将继续分发加载到的数据的结果，触发其handleResultOnMainThread方法。见名思义，此时已经切换到了主线程。
+>8. EngineJob#handleResultOnMainThread方法中，会回调在上面讲到的，它中维护了一系列的从Engine#load方法中传入的ResourceCallback信息，所以这里会对它们继续进行回调。
+>9. ResourceCallback，它的实现是在SingleRequest中，在它的实现中，会将结果交给相应的Target去处理，而我们的ImageView渲染资源正是由这些Target在调度。所以，最终资源就成功的显示到了控件上面。
+
+总体来说，宏观上代码逻辑还是很清晰的，一次加载过程，会创建一个SingleRequest，调用全局的加载引擎Engine，去创建一对EngineJob与DecodeJob，最后在DecodeJob中，根据DataFetcherGenerator获取到相应的DataFetcher，执行数据的加载。成功之后，一步步回调回去。先是DataFetcher到DataFetcherGenerator,再是DataFetcherGenerator到DecodeJob,再是从DecodeJob到EngineJob,进而在EngineJob中做线程切换，回到主线程，将结果回调至SingeRequest，再由SingleRequest中保存的Target引用通知到对应的控件，完成资源的渲染。同时EngineJob也会告知Engine，此次job已经加载完成，是由EngineJobListener完成的。大致就是一个链式的Callback回调过程。后面我会在代码上，根据这个大纲，详细分析一次从网络加载，并缓存到磁盘的详细过程。
+
+[下一篇 Glide源码分析（五），DecodeJob一次加载详细过程](Glide05.md)
