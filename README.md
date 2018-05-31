@@ -28,3 +28,5 @@ gilde源码分析，所有分析均是基于glide tag 4.7.1的代码。
 [数据加载DataFetcher与ModelLoader结构](doc/datafetcher_and_modelloader.md)
 
 [DataFetcherGenerator结构](doc/data_fetcher_generator.md)
+
+[DecodeHelper类相关方法分析](decode_helper.md)
