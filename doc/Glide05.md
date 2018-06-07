@@ -88,7 +88,7 @@
         throw new IllegalStateException("Unrecognized run reason: " + runReason);
     }
   }
-  
+
    private Stage getNextStage(Stage current) {
     switch (current) {
       case INITIALIZE:
@@ -337,7 +337,7 @@ DataFetcherGenerator实现类，从包含原始未修改源数据的缓存文件
 ```
 这个方法中，主要负责了两件事情，第一部分是缓存相应的数据，第二部分是请求数据。显然，初次进入方法时，dataToCache为空，因此跳过缓存，直接过渡到while循环中，循环负责取当前model相关(这里是一个http url)的所有支持的modelLoaders,这里helper.getLoadData()的内容如下，在DecodeHelper中有过相关的分析，这里直接给出结果。  
 > LoadData -> MultFetcher[HttpUrlFetcher, HttpUrlFecter]
-> 
+>
 > LoadData -> AssetFileDescriptorLocalUriFetcher
 
 遍历LoadData，这里getDiskCacheStrategy默认返回的DiskCacheStrategy.AUTOMATIC，fetcher.getDataSource的实现如下：  
@@ -453,3 +453,4 @@ cacheData中主要是两件事情，一是缓存当前的数据，用DataCacheKe
 ### 总结
 总的来说，glide加载过程就是由EngineJob触发DecodeJob,DecodeJob中会有ResourceCacheGenerator->DataCacheGenerator->SourceGenerator对应的ModelLoaders与ModelFetchers依次处理，如果是SourceGenerator则还会更新缓存，这三个不是说一定都会有的，如果有缓存存在且能命中，则不会经历SourceGenerator阶段。在DecodeJob中获取到数据之后，则会层层上报，由Fetcher->Generator->DecodeJob->EngineJob->SingleRequest->Target这样一个序列回调，我们知道Android只有主线程才能操作ui，这里线程切换部分是在EngineJob中进行完成的。至此，宏观和微观上我们理清了加载的一个过程，后面我们会分析有关磁盘缓存的和对图片结果处理的一些小的细节。
 
+[下一篇 Glide源码分析（六），资源加载成功更新缓存过程](Glide06.md)
