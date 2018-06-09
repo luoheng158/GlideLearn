@@ -3,11 +3,39 @@
     android:id="@+id/ll_content"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:gravity="center"
     android:orientation="vertical">
+
+    <Button
+        android:id="@+id/load"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Load"/>
+
+    <Button
+        android:id="@+id/load2"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Load2"/>
+
+    <Button
+        android:id="@+id/load3"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Jump To Second"/>
+
+    <Button
+        android:id="@+id/load4"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Remove.."/>
 
     <ImageView
         android:id="@+id/iv_image"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content" />
+
+    <ImageView
+        android:id="@+id/iv_image2"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content" />
 
