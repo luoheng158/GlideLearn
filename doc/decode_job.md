@@ -5,7 +5,7 @@
 - DiskCacheProvider  
 内部返回了一个DiskCache的对象，具体的默认实现是DiskLruCacheWrapper。关于DiskCache详细结构，可以参考此文[DiskCache结构](disk_cache.md)。
 - DeferredEncodeManager  
-???????
+将Decode出来的资源缓存至DiskCache中去的辅助类，会进行相应的Encode（Bitmap、Drawable等）存放至缓存文件中。
 - ReleaseManager  
 负责指示何时将作业安全地清理并返回池中。
 - Key  

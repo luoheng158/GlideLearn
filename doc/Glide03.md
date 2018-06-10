@@ -25,7 +25,7 @@
 这里的DiskCache是由InternalCacheDiskCacheFactory创建，其继承自DiskLruCacheFactory，最终DiskCache的实现类是DiskLruCacheWrapper对象。详细介绍->[DiskCache结构](disk_cache.md)
 
 - ActiveResources  
-存放了已经加载到Target上面，并且还未于JVM GC回收的Resource资源。
+存放了已经被Request请求的资源，是内存缓存的一种。
 
 - ResourceRecycler  
 一个回收Resource的辅助类，防止陷入递归，当回收的Resource资源有子资源的时候。
