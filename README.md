@@ -16,6 +16,10 @@ gilde源码分析，所有分析均是基于glide tag 4.7.1的代码。
 
 [Glide源码分析（六），缓存架构、存取命中分析 ](doc/Glide06.md)
 
+[Glide源码分析（七），总纲思路梳理](doc/Glide07.md)
+
+[Glide源码分析（八），Glide的自定义模块扩展与实践](doc/Glide08.md)
+
 ### 辅助细节文档:
 [MemoryCache结构](doc/memory_cache.md)  
 

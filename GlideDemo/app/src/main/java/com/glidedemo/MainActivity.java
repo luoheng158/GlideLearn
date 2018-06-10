@@ -27,7 +27,7 @@ public class MainActivity extends AppCompatActivity {
             public void onClick(View v) {
                 Glide.with(MainActivity.this)
                         .load("https://p.upyun.com/docs/cloud/demo.jpg")
-                        .apply(new RequestOptions().diskCacheStrategy(DiskCacheStrategy.ALL))
+                       // .apply(new RequestOptions().diskCacheStrategy(DiskCacheStrategy.ALL))
                         .into(imageView);
             }
         });
@@ -37,6 +37,7 @@ public class MainActivity extends AppCompatActivity {
             public void onClick(View v) {
                 Glide.with(MainActivity.this)
                         .load("https://p.upyun.com/docs/cloud/demo.jpg")
+                        .apply(RequestOptions.circleCropTransform())
                         .into(imageView2);
             }
         });

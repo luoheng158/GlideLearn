@@ -134,7 +134,8 @@ private void cacheData(Object dataToCache) {
       new DataCacheGenerator(Collections.singletonList(loadData.sourceKey), helper, this);
 }
 ```
-这段代码逻辑相关比较好理解，根据loadData中的sourceKey以及签名信息，构造一个DataChcheKey类型的对象，而后将其put至磁盘缓存中，其中sourceKey就是我们加载资源的GlideUrl对象("https://p.upyun.com/docs/cloud/demo.jpg")　。磁盘缓存的具体实现我们已经了解，默认是由DiskLruCacheWrapper实现，具体功能就是将数据写入预先设置的缓存目录的文件下，以文件的方式存放。在分析D加载资源的详细过程中，我们知道Engine#load会先在内存中查找是否有缓存命中，否则会启动DecodeJob，在它中总共有三个DataFetchGenerator，这里和磁盘缓存相关的就是DataCacheGenerator，具体逻辑是在其DataCacheGenerator#startNext方法中。
+这段代码逻辑相关比较好理解，根据loadData中的sourceKey以及签名信息，构造一个DataChcheKey类型的对象，而后将其put至磁盘缓存中，其中sourceKey就是我们加载资源的GlideUrl对象(https://p.upyun.com/docs/cloud/demo.jpg)。
+磁盘缓存的具体实现我们已经了解，默认是由DiskLruCacheWrapper实现，具体功能就是将数据写入预先设置的缓存目录的文件下，以文件的方式存放。在分析D加载资源的详细过程中，我们知道Engine#load会先在内存中查找是否有缓存命中，否则会启动DecodeJob，在它中总共有三个DataFetchGenerator，这里和磁盘缓存相关的就是DataCacheGenerator，具体逻辑是在其DataCacheGenerator#startNext方法中。
 ```
 @Override
   public boolean startNext() {
@@ -276,3 +277,5 @@ key =
 key = new DataCacheKey(currentSourceKey, signature);
 ```
 正如我们简单的例子，这里DataCacheKey只有网络的url决定，也即是一个数据流对象，不同的decode可以来扩展它，ResourceCacheKey就是这样一种缓存。至此，对于Glide的缓存架构我们就分析完了，整个系列差不多也接近尾声了，后面文章中，我会整理一些大纲的总线，供大家自己研读。
+
+[下一篇 Glide源码分析（七），总纲思路梳理](Glide07.md)

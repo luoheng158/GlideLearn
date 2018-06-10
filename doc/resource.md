@@ -21,7 +21,7 @@ UML图如下：
 包装任意对象的资源，所使用的用途只包括没有尺寸且不能回收/关闭的资源对象。直接之类是FileResource，指定了该对象为文件对象。
 
 - LazyBitmapDrawableResource  
-一个包装了BitmapDrawable相关的延迟分配的资源。没明白？？？？
+一个包装了BitmapDrawable相关的延迟分配的资源。
 
 - LockedResource  
 一个可以推迟被回收的资源，直到unlock方法被调用。
